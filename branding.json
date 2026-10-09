@@ -1,0 +1,13 @@
+{
+  "primaryColor": "#FFFFFF",
+  "secondaryColor": "#F9F9F9",
+  "backgroundColor": "#FFFFFF",
+  "textColor": "#333333",
+  "accentColor": "#0066CC",
+  "fontHeading": "Inter",
+  "fontBody": "system-ui",
+  "borderRadius": "0.25rem",
+  "logoText": "Lista de Compras",
+  "logoImageUrl": "https://vabacntbfcwhgkjqajcw.supabase.co/storage/v1/object/public/screenshots/projects/P-GN8YTW/logo.png",
+  "tone": "professional"
+}
