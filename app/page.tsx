@@ -6,6 +6,7 @@ import { Trash2, Loader2 } from "lucide-react";
 interface Articulo {
   id: number;
   nombre: string;
+  cantidad: number;
   comprado: number;
   fecha_creacion: string;
 }
@@ -13,6 +14,7 @@ interface Articulo {
 export default function Home() {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [nuevoArticulo, setNuevoArticulo] = useState("");
+  const [nuevaCantidad, setNuevaCantidad] = useState("1");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +41,15 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = nuevoArticulo.trim();
+    const cantidadNum = Number(nuevaCantidad);
 
     if (!trimmed) {
       setValidationError("El artículo no puede estar vacío");
+      return;
+    }
+
+    if (!Number.isInteger(cantidadNum) || cantidadNum < 1) {
+      setValidationError("La cantidad debe ser un número entero positivo");
       return;
     }
 
@@ -52,7 +60,7 @@ export default function Home() {
       const res = await fetch("/api/articulos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre: trimmed }),
+        body: JSON.stringify({ nombre: trimmed, cantidad: cantidadNum }),
       });
 
       if (!res.ok) {
@@ -63,6 +71,7 @@ export default function Home() {
       const newArticulo = await res.json();
       setArticulos((prev) => [newArticulo, ...prev]);
       setNuevoArticulo("");
+      setNuevaCantidad("1");
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al agregar el artículo");
@@ -157,6 +166,18 @@ export default function Home() {
               className="flex-1 px-4 py-2 border border-[#DDD] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
               disabled={submitting}
             />
+            <input
+              type="number"
+              value={nuevaCantidad}
+              onChange={(e) => {
+                setNuevaCantidad(e.target.value);
+                if (validationError) setValidationError(null);
+              }}
+              min="1"
+              placeholder="Cant."
+              className="w-20 px-3 py-2 border border-[#DDD] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
+              disabled={submitting}
+            />
             <button
               type="submit"
               disabled={submitting}
@@ -197,7 +218,7 @@ export default function Home() {
                       : "text-[#555]"
                   }`}
                 >
-                  {articulo.nombre}
+                  {articulo.nombre} ({articulo.cantidad})
                 </span>
                 <button
                   onClick={() => handleDelete(articulo.id)}
